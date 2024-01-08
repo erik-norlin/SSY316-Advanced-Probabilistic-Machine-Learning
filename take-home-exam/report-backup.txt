@@ -1,0 +1,135 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{cases}
+\usepackage{multirow}
+
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{cases}
+ \usepackage{geometry}
+ \usepackage{float}
+\usepackage{a4wide}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+\usepackage{subfiles}
+
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage{textcomp,gensymb}
+
+\usepackage[toc,page]{appendix}
+
+\usepackage[style=ieee, citestyle=numeric-comp, backend=biber]{biblatex}
+\addbibresource{mybibliography.bib}
+
+\setlength{\parindent}{0pt}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{cases}
+
+% \usepackage[margin=25mm]{geometry}\usepackage{fullpage}
+
+\usepackage{subcaption}
+\usepackage{float}
+
+
+\usepackage{listings}
+\usepackage{lmodern}  % for bold teletype font
+\usepackage{amsmath}  % for \hookrightarrow
+\usepackage{xcolor}   % for \textcolor
+    %\usepackage{showframe} %This line can be used to clearly show the new margins
+
+    \newgeometry{vmargin={30mm}, hmargin={20mm,20mm}}
+
+\title{Take Home Exam SSY316}
+\author{Matthew Newson, Erik Norlin}
+\date{January 2023}
+
+\begin{document}
+
+\maketitle
+
+\section*{Q1: Principal Component Analysis (PCA) of
+Genomes [20 pts]}
+
+\subsection*{1.}
+Performing singular value decomposition of the mean centered data set $X$ with individuals as rows and features as columns yields $X=U\Sigma V^T$. The principal components are $U\Sigma \in \mathbb{R}^{995\times 995}$, the principal directions $V\in \mathbb{R}^{10101\times 995}$, and the variances along the diagonal of $\frac{1}{n-1}\Sigma^2 \in \mathbb{R}^{995\times 995}$.
+
+\subsection*{2.}
+
+Figure \ref{fig:q1-2} shows the first two principal components of the data set.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{Q1_2.png}
+    \caption{The first two principal components of the data set with labels African Caribbean in Barbados (ACB), African Ancestry in Southwest US (ASW), Esan in Nigeria (ESN), Gambian in Western Division (GWD), Luhya in Webuye (LWK), Mende in Sierra Leone (MSL), and Yoruba in Ibadan (YRI).}
+    \label{fig:q1-2}
+\end{figure}
+
+\subsection*{3.}
+
+The figure tells us that populations located in Nigeria (ESN and YRI) overlap and the populations located in America (ACB and ASW) overlap somewhat. Populations that do not share the same regions, such as the population in Gambia and in Sierra Leone do not overlap as much. \\
+
+An interpretation of the first two principal components could be that they capture genetic similarities and differences in the populations because populations sharing the same regions tend to cluster together.
+
+\subsection*{4.}
+
+Figure \ref{fig:q1-4} shows the first and third principal components of the data set.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{Q1_4.png}
+    \caption{The first and third principal components of the data set with labels males (M) and females (F).}
+    \label{fig:q1-4}
+\end{figure}
+
+\subsection*{5.}
+From the figure we can see that the first and third principal components capture genetic differences in males and females.
+
+\subsection*{6.}
+
+From inspection in Figure \ref{fig:q1-6} it is noticeable that the third principal direction dominantly points in the direction of the dimensions representing nucleobase indices larger than 9500, which could indicate that these nucleobases are responsible for male and female differences.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{Q1_6.png}
+    \caption{The absolute value of the third principal direction against the nucleobase index.}
+    \label{fig:q1-6}
+\end{figure}
+
+\newpage
+\section*{Q2: Markov Chain Monte Carlo [30 pts]}
+
+
+
+
+\newpage
+\section*{Q3: Variational Inference (VI) [30 pts]}
+\subsection*{3.1 A Review of Vanilla LDA [9 pts]}
+
+1. False, the LDA involves Dirichlet and multinomial distributions and Dirichlet is the conjugate prior of the distribution of the categorical distribution. 
+
+2. True, Variational EM involves maximizing a lower bound on the log-likelihood, and this optimization problem is non-convex in the case of LDA. The E-step of the EM algorithm requires finding the optimal values for the variational parameters, which involves non-convex optimization.
+
+3. T
+
+V = number of words
+
+4. The computational complexity of the mean-field is VI for LDA is O(KDV)
+
+5. The memory complexity of the mean-field is VI for LDA is O()
+
+6. False, it is used for extracting topics from text corpora. 
+\subsection*{3.2 More HMMs [21 pts]}
+
+
+
+\newpage
+\section*{Q4: QWOP [20 pts]}
+
+\newpage
+\section*{Appendix}
+
+\end{document}
