@@ -170,47 +170,156 @@ Save $\textbf{x}_{s}$ every $t$:th iteration and \textbf{if} $i >$ burn in
 acceptance function?    
 
 \subsection*{3.}
+Figures \ref{fig:0.005}, \ref{fig:0.05} and \ref{fig:0.5} show trace plots of the $home$ variable against 10,000 iterations for standard deviation $\sigma=0.005, 0.05, 0.5$ and thinning $t=1,5,20,50$. Also, the rejection ratio for all parameter sets are presented in Table \ref{tab:ratio}. \\
 
+The rejection rate for $\sigma=0.005$ is low, around 10\% for every $t$, causing the chain to move around quickly which is good, but it does not cover a wide range of the distribution evenly. This makes sense because the deviation of the proposal distribution is low, and hence, proposed samples will be relatively close to current samples. \\
+
+For $\sigma=0.5$ we have the opposite case where the deviation of proposed samples from current samples is so large that they are too often rejected, around 100\% of the time for each $t$. The chain covers a wide range of the distribution, but fails to move around quickly and gets stuck on some values for long periods of time. \\
+
+Lastly, for $\sigma=0.05$ we have a relatively high rejection ratio, around 80\% for each $t$. In this case however, the chain moves around reasonably quickly and covers a wide range of the distribution. From the trace plots we can see that the trace plot for $t=5$ looks like to be the be the most stable chain. Thus, the parameter set that seems the most optimal is $\sigma=0.05$ and $t=5$. 
+
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.475\textwidth}
+    \includegraphics[width=\linewidth]{home_sigma=0.005_thinning=1.png}
+    \caption{$t=1$}
+  \end{subfigure}
+  \begin{subfigure}{0.475\textwidth}
+    \includegraphics[width=\linewidth]{home_sigma=0.005_thinning=5.png}
+    \caption{$t=5$}
+  \end{subfigure}
+  
+  \vspace{2em}
+  
+  \begin{subfigure}{0.475\textwidth}
+    \includegraphics[width=\linewidth]{home_sigma=0.005_thinning=20.png}
+    \caption{$t=20$}
+  \end{subfigure}
+  \begin{subfigure}{0.475\textwidth}
+    \includegraphics[width=\linewidth]{home_sigma=0.005_thinning=50.png}
+    \caption{$t=50$}
+  \end{subfigure}
+  \caption{Trace plots of the $home$ variable against 10,000 iterations for $\sigma=0.005$ and thinning $t=1,5,20,50$. The red dashed line shows the end of the burn-in period and the start of sampling.}
+  \label{fig:0.005}
+\end{figure}
+
+
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.475\textwidth}
+    \includegraphics[width=\linewidth]{home_sigma=0.05_thinning=1.png}
+    \caption{$t=1$}
+  \end{subfigure}
+  \begin{subfigure}{0.475\textwidth}
+    \includegraphics[width=\linewidth]{home_sigma=0.05_thinning=5.png}
+    \caption{$t=5$}
+  \end{subfigure}
+  
+  \vspace{2em}
+  
+  \begin{subfigure}{0.475\textwidth}
+    \includegraphics[width=\linewidth]{home_sigma=0.05_thinning=20.png}
+    \caption{$t=20$}
+  \end{subfigure}
+  \begin{subfigure}{0.475\textwidth}
+    \includegraphics[width=\linewidth]{home_sigma=0.05_thinning=50.png}
+    \caption{$t=50$}
+  \end{subfigure}
+  \caption{Trace plots of the $home$ variable against 10,000 iterations for $\sigma=0.05$ and thinning $t=1,5,20,50$. The red dashed line shows the end of the burn-in period and the start of sampling.}
+  \label{fig:0.05}
+\end{figure}
+
+
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.475\textwidth}
+    \includegraphics[width=\linewidth]{home_sigma=0.5_thinning=1.png}
+    \caption{$t=1$}
+  \end{subfigure}
+  \begin{subfigure}{0.475\textwidth}
+    \includegraphics[width=\linewidth]{home_sigma=0.5_thinning=5.png}
+    \caption{$t=5$}
+  \end{subfigure}
+  
+  \vspace{2em}
+  
+  \begin{subfigure}{0.475\textwidth}
+    \includegraphics[width=\linewidth]{home_sigma=0.5_thinning=20.png}
+    \caption{$t=20$}
+  \end{subfigure}
+  \begin{subfigure}{0.475\textwidth}
+    \includegraphics[width=\linewidth]{home_sigma=0.5_thinning=50.png}
+    \caption{$t=50$}
+  \end{subfigure}
+  \caption{Trace plots of the $home$ variable against 10,000 iterations for $\sigma=0.5$ and thinning $t=1,5,20,50$. The red dashed line shows the end of the burn-in period and the start of sampling.}
+  \label{fig:0.5}
+\end{figure}
 
 \begin{table}[H]
     \centering
-        \caption{Rejection ratio for each parameter setting of thinning $t$ and standard deviation $\sigma$ of the proposal distribution.}
-        \begin{tabular}{p{0.04\textwidth}|p{0.05\textwidth}|p{0.05\textwidth}|p{0.05\textwidth}}
+        \caption{Rejection ratio after the burn-in phase for each parameter setting of standard deviation $\sigma$ and thinning $t$ of the proposal distribution.}
+        \begin{tabular}{p{0.04\textwidth}|p{0.06\textwidth}|p{0.06\textwidth}|p{0.06\textwidth}}
             % \toprule
             \multicolumn{3}{c}{}\\
             \toprule
             \toprule
             $t$ \textbackslash \hspace{0.01cm} $\sigma$ & 0.005 & 0.05 & 0.5 \\
             \midrule
-            1 &  &  \\
-            5 &  & \\
-            20 & & \\
-            50 & & \\
-            
+            1 & 0.1022 & 0.8054 & 0.9996 \\
+            5 & 0.0894 & 0.8130 & 0.9996 \\
+            20 & 0.1008 & 0.7966 & 1.0000 \\
+            50 & 0.1020 & 0.8036 & 1.0000 \\
             \bottomrule            
         \end{tabular}
-    \label{tab:ce4-0-3}
+    \label{tab:ratio}
 \end{table}
+
+Figure \ref{fig:hist} shows a histogram of the posterior distribution (PDF) of the $home$ variable for the optimal parameter set. We can see that it closely follows the PDF of the proposal distribution.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{home_hist.png}
+    \caption{Histogram of the posterior distribution (PDF) of the $home$ variable for the optimal parameter set $\sigma=0.5$ and $t=5$.}
+    \label{fig:hist}
+\end{figure}
+
+The expected attack against the expected defense of each team in Premier League 2013-2014 is presented in Figure \ref{fig:att-def}. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{attack_vs_defense.png}
+    \caption{The expected attack against the expected defense of each team in Premier League 2013-2014. The indices of the points maps to the team indices.}
+    \label{fig:att-def}
+\end{figure}
 
 
 \newpage
-\section*{Q3: Variational Inference (VI) [30 pts]}
-\subsection*{3.1 A Review of Vanilla LDA [9 pts]}
+\section*{Q3: Variational Inference (VI)}
+\subsection*{A Review of Vanilla LDA}
 
-1. False, the LDA involves Dirichlet and multinomial distributions and Dirichlet is the conjugate prior of the distribution of the categorical distribution. 
+\subsubsection*{1.}
+False, the LDA involves posterior inference with the Dirichlet distribution as a conjugate prior to the Multinomial distribution.
 
-2. True, Variational EM involves maximizing a lower bound on the log-likelihood, and this optimization problem is non-convex in the case of LDA. The E-step of the EM algorithm requires finding the optimal values for the variational parameters, which involves non-convex optimization.
+\subsubsection*{2.}
+True, Variational EM involves maximizing the ELBO, and this optimization problem is non-convex in the case of LDA and requires non-convex optimization.
 
-3. T
+\subsubsection*{3.}
+The model parameters are $\boldsymbol{\alpha}$, $\boldsymbol{\eta}$, $\boldsymbol{\theta}$ and $\boldsymbol{\beta}$. There is one  $\boldsymbol{\alpha}$, one $\boldsymbol{\eta}$, $D$ number of $\boldsymbol{\theta}$:s and $K$ number of $\boldsymbol{\beta}$:s, and each of these vectors has an unknown number of parameters. Thus, there are $D+K+2$ number of parameter-vectors and an unknown number of total model parameters.
 
-V = number of words
+\subsubsection*{4.}
+The computational complexity of mean-field VI for LDA is $\mathcal{O}(DV+K)$.
 
-4. The computational complexity of the mean-field is VI for LDA is O(KDV)
+\subsubsection*{5.}
+The memory complexity of mean-field is VI for LDA is $\mathcal{O}(D(1+(2V))+K+2)$
 
-5. The memory complexity of the mean-field is VI for LDA is O()
+\subsubsection*{6.}
+False, it is used for extracting topics from text corpora. 
+\subsection*{More HMMs}
 
-6. False, it is used for extracting topics from text corpora. 
-\subsection*{3.2 More HMMs [21 pts]}
+
 
 1. \textbf{Variables:}
 
