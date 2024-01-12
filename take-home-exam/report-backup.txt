@@ -81,6 +81,7 @@
 
 \maketitle
 
+
 \section*{Q1: Principal Component Analysis (PCA) of
 Genomes}
 
@@ -101,7 +102,7 @@ Figure \ref{fig:q1-2} shows the first two principal components of the data set.
 
 The figure tells us that populations located in Nigeria (ESN and YRI) overlap and the populations located in America (ACB and ASW) overlap somewhat. Populations that do not share the same regions, such as the population in Gambia and in Sierra Leone do not overlap as much. \\
 
-An interpretation of the first two principal components could be that they capture genetic similarities and differences in the populations because populations sharing the same regions tend to cluster together.
+An interpretation of the first two principal components could be that they capture genetic similarities and differences in the populations because populations living in the same regions tend to cluster together.
 
 \subsection*{4.}
 
@@ -131,7 +132,7 @@ From inspection in Figure \ref{fig:q1-6} it is noticeable that the third princip
 \section*{Q2: Markov Chain Monte Carlo}
 \subsection*{1.}
 
-The joint likelihood is
+The full joint likelihood is
 
 $$
 p(\textbf{y},\boldsymbol{\theta}, \boldsymbol{\eta}) = 
@@ -139,11 +140,11 @@ p(\boldsymbol{\eta})p(\boldsymbol{\theta}\mid \boldsymbol{\eta})p(\textbf{y}\mid
 $$
 
 $$
-=p(\mu_{att})p(\mu_{def})p(\tau_{att})p(\tau_{def})\prod_{t=0}^{T=19}p(att_t\mid\mu_{att},\tau_{att})p(def_t\mid\mu_{def},\tau_{def})\prod_{g=0}^{G=379}\prod_{j=0}^{J=1}p(\textbf{y}_{gj}\mid \boldsymbol{\theta}_{gj})
+=p(\mu_{att})p(\mu_{def})p(\tau_{att})p(\tau_{def})p(home)\prod_{t=0}^{T=19}p(att_t\mid\mu_{att},\tau_{att})p(def_t\mid\mu_{def},\tau_{def})\prod_{g=0}^{G=379}\prod_{j=0}^{J=1}p(\textbf{y}_{gj}\mid \boldsymbol{\theta}_{gj})
 $$
 
 $$
-=\mathcal{N}(\mu_{att}\mid0,\tau_1^{-1})\mathcal{N}(\mu_{def}\mid0,\tau_1^{-1})\text{Gam}(\tau_{att}\mid\alpha, \beta)\text{Gam}(\tau_{def}\mid\alpha, \beta)
+=\mathcal{N}(\mu_{att}\mid0,\tau_1^{-1})\mathcal{N}(\mu_{def}\mid0,\tau_1^{-1})\text{Gam}(\tau_{att}\mid\alpha, \beta)\text{Gam}(\tau_{def}\mid\alpha, \beta)\mathcal{N}(home\mid0,\tau_0^{-1})
 $$
 $$
 \cdot\prod_{t=0}^{T=19}\mathcal{N}(att_t\mid\mu_{att},\tau_{att}^{-1})\mathcal{N}(def_t\mid\mu_{def},\tau_{def}^{-1})
@@ -158,25 +159,27 @@ The Metropolis-Hastings algorithm for sampling from the posterior $p(\boldsymbol
 \begin{algorithm}
 \caption{Metropolis-Hastings}
 \label{alg:mh}
-\For{i = 1:iterations}{
+Initialize $\textbf{x}_{s}$\\
+$i=0$\\
+\While{number of samples $<$ number of samples to sample}{
 Sample hyper-priors and priors $\textbf{x}_{s+1}$ from the proposal distribution $\mathcal{N}(\textbf{x}_{s},\sigma^2I)$\\
 Compute the probabilities $p(\textbf{x}_{s})$ and $p(\textbf{x}_{s+1})$ given the observed data\\
 Compute the acceptance probability $p_A = p(\textbf{x}_{s+1}) / p(\textbf{x}_{s})$\\
 Accept the new sample $\textbf{x}_{s} \leftarrow \textbf{x}_{s+1}$ \textbf{if} $u\sim\mathcal{U}(0,1) < p_A$ \\
-Save $\textbf{x}_{s}$ every $t$:th iteration and \textbf{if} $i >$ burn in
+Save $\textbf{x}_{s}$ every $t$:th iteration and \textbf{if} $i >$ burn in\\
+Add one to $i$
 }
 \end{algorithm}
 
-acceptance function?    
 
 \subsection*{3.}
-Figures \ref{fig:0.005}, \ref{fig:0.05} and \ref{fig:0.5} show trace plots of the $home$ variable against 10,000 iterations for standard deviation $\sigma=0.005, 0.05, 0.5$ and thinning $t=1,5,20,50$. Also, the rejection ratio for all parameter sets are presented in Table \ref{tab:ratio}. \\
+The Metropolis-Hastings algorithm was run for the parameter sets $\sigma=0.005, 0.05, 0.5$ and $t=1,5,20,50$ with a burn-in phase of 5000 steps. Hence, the total number of iterations for each parameter set were $5000+5000t$. Figures \ref{fig:0.005}, \ref{fig:0.05} and \ref{fig:0.5} show trace plots of the $home$ variable against iterations. $home$ is only plotted against the first 10000 iterations for every parameter set to make a more fair comparison between the trace plots. Also, the rejection ratios for the 5000 samples for each parameter set are presented in Table \ref{tab:ratio}. \\
 
-The rejection rate for $\sigma=0.005$ is low, around 10\% for every $t$, causing the chain to move around quickly which is good, but it does not cover a wide range of the distribution evenly. This makes sense because the deviation of the proposal distribution is low, and hence, proposed samples will be relatively close to current samples. \\
+The rejection rate for $\sigma=0.005$ is low, around 10\% for every $t$, causing the chain to move around quickly which is good, but it does not cover a wide range of the distribution evenly. This makes sense because the deviation of the proposal distribution is so small that proposed samples are always close to current samples. \\
 
-For $\sigma=0.5$ we have the opposite case where the deviation of proposed samples from current samples is so large that they are too often rejected, around 100\% of the time for each $t$. The chain covers a wide range of the distribution, but fails to move around quickly and gets stuck on some values for long periods of time. \\
+For $\sigma=0.5$ we have the opposite case where the deviation of proposed samples from current samples is so large that they are rejected too often, around 100\% of the time for each $t$. The chain covers a wide range of the distribution, but fails to move around and gets stuck on some values for long periods of time. \\
 
-Lastly, for $\sigma=0.05$ we have a relatively high rejection ratio, around 80\% for each $t$. In this case however, the chain moves around reasonably quickly and covers a wide range of the distribution. From the trace plots we can see that the trace plot for $t=5$ looks like to be the be the most stable chain. Thus, the parameter set that seems the most optimal is $\sigma=0.05$ and $t=5$. 
+Lastly, for $\sigma=0.05$ we have a relatively high rejection ratio, around 80\% for each $t$. In this case however, the chain moves around reasonably quickly and covers a wide range of the distribution. $t=5$ yields the smallest rejection rate for this standard deviation, and we can see from the trace plots that this chain looks like be the be the most stable one. Thus, the parameter set that seems the most optimal is $\sigma=0.05$ and $t=5$. 
 
 
 \begin{figure}[H]
@@ -200,7 +203,7 @@ Lastly, for $\sigma=0.05$ we have a relatively high rejection ratio, around 80\%
     \includegraphics[width=\linewidth]{home_sigma=0.005_thinning=50.png}
     \caption{$t=50$}
   \end{subfigure}
-  \caption{Trace plots of the $home$ variable against 10,000 iterations for $\sigma=0.005$ and thinning $t=1,5,20,50$. The red dashed line shows the end of the burn-in period and the start of sampling.}
+  \caption{Trace plots of the $home$ variable against the 10000 iterations for $\sigma=0.005$ and $t=1,5,20,50$. The red dashed line marks the end of the burn-in period.}
   \label{fig:0.005}
 \end{figure}
 
@@ -227,7 +230,7 @@ Lastly, for $\sigma=0.05$ we have a relatively high rejection ratio, around 80\%
     \includegraphics[width=\linewidth]{home_sigma=0.05_thinning=50.png}
     \caption{$t=50$}
   \end{subfigure}
-  \caption{Trace plots of the $home$ variable against 10,000 iterations for $\sigma=0.05$ and thinning $t=1,5,20,50$. The red dashed line shows the end of the burn-in period and the start of sampling.}
+  \caption{Trace plots of the $home$ variable against the first 10000 iterations for $\sigma=0.05$ and $t=1,5,20,50$. The red dashed line marks the end of the burn-in period.}
   \label{fig:0.05}
 \end{figure}
 
@@ -254,13 +257,13 @@ Lastly, for $\sigma=0.05$ we have a relatively high rejection ratio, around 80\%
     \includegraphics[width=\linewidth]{home_sigma=0.5_thinning=50.png}
     \caption{$t=50$}
   \end{subfigure}
-  \caption{Trace plots of the $home$ variable against 10,000 iterations for $\sigma=0.5$ and thinning $t=1,5,20,50$. The red dashed line shows the end of the burn-in period and the start of sampling.}
+  \caption{Trace plots of the $home$ variable against the first 10000 iterations for $\sigma=0.5$ and $t=1,5,20,50$. The red dashed line marks the end of the burn-in period.}
   \label{fig:0.5}
 \end{figure}
 
 \begin{table}[H]
     \centering
-        \caption{Rejection ratio after the burn-in phase for each parameter setting of standard deviation $\sigma$ and thinning $t$ of the proposal distribution.}
+        \caption{Rejection ratios for 5000 samples for each parameter set of $\sigma$ and $t$.}
         \begin{tabular}{p{0.04\textwidth}|p{0.06\textwidth}|p{0.06\textwidth}|p{0.06\textwidth}}
             % \toprule
             \multicolumn{3}{c}{}\\
@@ -268,30 +271,32 @@ Lastly, for $\sigma=0.05$ we have a relatively high rejection ratio, around 80\%
             \toprule
             $t$ \textbackslash \hspace{0.01cm} $\sigma$ & 0.005 & 0.05 & 0.5 \\
             \midrule
-            1 & 0.1022 & 0.8054 & 0.9996 \\
-            5 & 0.0894 & 0.8130 & 0.9996 \\
-            20 & 0.1008 & 0.7966 & 1.0000 \\
-            50 & 0.1020 & 0.8036 & 1.0000 \\
+            1 & 0.1080 & 0.8196 & 0.9998 \\
+            5 & 0.0995 & 0.8158 & 0.9999 \\
+            20 & 0.1039 & 0.8270 & 1.0000 \\
+            50 & 0.1038 & 0.8299 & 1.0000 \\
             \bottomrule            
         \end{tabular}
     \label{tab:ratio}
 \end{table}
 
-Figure \ref{fig:hist} shows a histogram of the posterior distribution (PDF) of the $home$ variable for the optimal parameter set. We can see that it closely follows the PDF of the proposal distribution.
+\newpage
+Figure \ref{fig:hist} shows the posterior histogram of 5000 MCMC samples of the $home$ variable for the optimal parameter set. We can see that it closely follows the PDF of the proposal distribution.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{home_hist.png}
-    \caption{Histogram of the posterior distribution (PDF) of the $home$ variable for the optimal parameter set $\sigma=0.5$ and $t=5$.}
+    \caption{Posterior histogram of 5000 MCMC samples of the $home$ variable plotted side by side with the proposal distribution for the optimal parameter set $\sigma=0.5$ and $t=5$.}
     \label{fig:hist}
 \end{figure}
 
+\newpage
 The expected attack against the expected defense of each team in Premier League 2013-2014 is presented in Figure \ref{fig:att-def}. 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{attack_vs_defense.png}
-    \caption{The expected attack against the expected defense of each team in Premier League 2013-2014. The indices of the points maps to the team indices.}
+    \caption{The expected attack against the expected defense of each team in Premier League 2013-2014. The indices of the points maps to the team indices of the data set.}
     \label{fig:att-def}
 \end{figure}
 
@@ -304,55 +309,38 @@ The expected attack against the expected defense of each team in Premier League 
 False, the LDA involves posterior inference with the Dirichlet distribution as a conjugate prior to the Multinomial distribution.
 
 \subsubsection*{2.}
-True, Variational EM involves maximizing the ELBO, and this optimization problem is non-convex in the case of LDA and requires non-convex optimization.
+True, non-convex optimization is required.
 
 \subsubsection*{3.}
-The model parameters are $\boldsymbol{\alpha}$, $\boldsymbol{\eta}$, $\boldsymbol{\theta}$ and $\boldsymbol{\beta}$. There is one  $\boldsymbol{\alpha}$, one $\boldsymbol{\eta}$, $D$ number of $\boldsymbol{\theta}$:s and $K$ number of $\boldsymbol{\beta}$:s, and each of these vectors has an unknown number of parameters. Thus, there are $D+K+2$ number of parameter-vectors and an unknown number of total model parameters.
+The model parameters are $\boldsymbol{\alpha}\in\mathbb{R}^K$ and $\boldsymbol{\eta}\in\mathbb{R}^V$. Thus, there are $K+V$ number of model parameters.
 
 \subsubsection*{4.}
-The computational complexity of mean-field VI for LDA is $\mathcal{O}(DV+K)$.
+The computational complexity for one document in mean-field VI for LDA is $\mathcal{O}(N^2K)$, where $N$ is the number of words in the document and $K$ is the number of topics.
 
 \subsubsection*{5.}
-The memory complexity of mean-field is VI for LDA is $\mathcal{O}(D(1+(2V))+K+2)$
+The memory complexity for one document in mean-field VI for LDA is $\mathcal{O}(K(N+V+1))$, where $N$ is the number of words in the document, $K$ the number of topics and $V$ the number of unique words.
 
 \subsubsection*{6.}
-False, it is used for extracting topics from text corpora. 
+False, it is used for extracting topics from text corpora.
+
+
 \subsection*{More HMMs}
 
+\subsubsection*{1.}
+\textbf{Observed variables}\\
+$w$ and $z$.\\
 
+\textbf{Hidden variables}\\
+$\delta$, $p$, and $\theta$.\\
 
-1. \textbf{Variables:}
-
-(a) Observed variables:
-
-For each document, $w_d$ (word sequence).\\
-
-(b) Hidden variables:
-
-For each document $w_d$:
-\begin{itemize}
-    \item $p_d$: Beta-distributed variable.
-    \item $\theta_d$: Dirichlet-distributed variable.
-    \item $z_{d1}$: Multinomial-distributed variable for the first word.
-    \item $\delta_{di}$: Bernoulli-distributed variable for each subsequent word.
-    \item $z_{di}$: Multinomial-distributed variable for each subsequent word.
-\end{itemize}
-
-(c) Model parameters to be estimated:
-
-\begin{itemize}
-    \item $\alpha$: Dirichlet parameter.
-    \item $\beta$: Multinomial parameter.
-    \item $\gamma$: Beta parameter.
-    \item $T$: Transition matrix among $K$ topics.
-\end{itemize}
-
+\textbf{Model parameters to be estimated}\\
+$\alpha$, $\beta$, $\gamma$, and $T$.
 
 \newpage
 \section*{Q4: QWOP}
 
 \subsection*{3.}
-Three methods were implemented to optimize QWOP. The first being uniform random search, the second being gradient descent (GD) with fixed step rate and the last being an evolutionary algorithm (EA). Random search was the first solution that came to mind and was straight forward to implement; in a for loop, pick a random sequence and simulate the plan. The best random search performed was 6 m after 40,000 iterations. GD on the other hand did not do as well as topping at 3 m. Since the objective function consists of 40 variables and is assumably highly non-convex, it makes sense that any given instance of GD will, most likely, quickly converge to a local minimum resulting in poor performance in the game. For this reason, an EA was considered. EAs are incredibly suitable for optimization problems where the objective function is highly non-convex. It consists of a population of randomly initialized individuals (instances) and the ones that yield better performance reproduce with other well performing individuals often leading to better performing offsprings. The EA that was implemented was initialized with 500 individuals and ran for 100 generations. The best performing individual got to almost 8 m, beating random search by roughly 2 m. The corresponding plan is presented in Listing \ref{lst:plan}. \\
+Three methods were implemented to optimize QWOP. The first being uniform random search, the second being gradient descent (GD) with fixed step rate and the last being an evolutionary algorithm (EA). Random search was the first solution that came to mind and was straight forward to implement; in a for loop, pick a random sequence and simulate the plan. The best plan obtained using random search was obtained after 40000 iterations and resulted in a total distance of 6 m. GD on the other hand did not perform as well and topped at 3 m, and seemingly got stuck every time. Since the objective function consists of 40 variables and is assumably highly non-convex, it makes sense that any given instance of GD will most likely quickly converge to a local minimum resulting in poor performance in the game. For this reason, an EA was considered. EAs are suitable for optimization problems where the objective function is highly non-convex. It consists of a population of randomly initialized individuals (game plans in this case) and the ones with higher fitness (better performance in the game) reproduce with each other, often leading to offsprings with even higher fitness. Over time the fitness of the individuals gets better and better resulting in continuously better performance in the game. The EA that was implemented was initialized with 500 individuals and ran for 100 generations. The best performing individual got to almost 8 m, beating random search by roughly 2 m. The corresponding plan is presented in Listing \ref{lst:plan}. \\
 
 \begin{lstlisting}[language=Python, caption={Best plan obtained for QWOP by the EA. Yields a total distance of 7.84 m.}, label={lst:plan}]
 plan = [-1, -1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, -1, -1, 1, 1, -1, -1, 1, 1, -1, -1, -1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, -1, -1, -1, 1, 1, 1, -1]
@@ -431,25 +419,205 @@ fig.tight_layout()
 plt.show()
 \end{lstlisting}
 
+\begin{lstlisting}[language=Python, caption={Python script for Q2.}, label={lst:q2}]
+import numpy as np
+import numpy.linalg as la 
+import matplotlib.pyplot as plt
+import pandas as pd
+import scipy.stats as st
+
+
+def enforce_corner_constraint(theta, n_teams):
+    theta[0] = theta[n_teams] = 0
+    return theta
+
+def propose_samples(current, sigma):
+    I = np.eye(current.shape[0])
+    proposal = np.random.multivariate_normal(current, cov=I*sigma**2)
+    return proposal
+
+def compute_hyper_prior_probabilities(eta):
+    tau1 = 0.0001
+    alpha = beta = 0.1
+
+    mu_attack_logprob = st.norm(0, 1/np.sqrt(tau1)).logpdf(eta[0])
+    mu_defense_logprob = st.norm(0, 1/np.sqrt(tau1)).logpdf(eta[1])
+    tau_attack_logprob = st.gamma(alpha, scale=1/beta).logpdf(eta[2])
+    tau_defense_logprob = st.gamma(alpha, scale=1/beta).logpdf(eta[3])
+
+    eta_logprob = mu_attack_logprob + mu_defense_logprob + tau_attack_logprob + tau_defense_logprob
+    return eta_logprob
+
+def compute_prior_probabilities(eta, theta, n_teams):
+    tau0 = 0.0001
+
+    mu_attack = eta[0]
+    mu_defense = eta[1]
+    tau_attack = eta[2]
+    tau_defense = eta[3]
+    
+    home = theta[-1]
+    attack = theta[:n_teams]
+    defense = theta[n_teams:-1]
+
+    home_logprob = st.norm(0, 1/np.sqrt(tau0)).logpdf(home)
+    attack_logprob = st.norm(mu_attack, 1/np.sqrt(tau_attack)).logpdf(attack)
+    defense_logprob = st.norm(mu_defense, 1/np.sqrt(tau_defense)).logpdf(defense)
+
+    theta_prob = home_logprob + np.sum(attack_logprob + defense_logprob)
+    return theta_prob
+
+def compute_likelihood(theta, n_teams, dataf):
+    
+    goals_home = dataf['goals_home'].values.astype(int)
+    goals_away = dataf['goals_away'].values.astype(int)
+    home_team = dataf['home_team'].values.astype(int)
+    away_team = dataf['away_team'].values.astype(int)
+
+    home = theta[-1]
+    attack = theta[:n_teams]
+    defense = theta[n_teams:-1]
+
+    theta_home = np.exp(home + attack[home_team] - defense[away_team])
+    theta_away = np.exp(attack[away_team] - defense[home_team])
+    
+    loglikelihood_home = st.poisson(theta_home).logpmf(goals_home)
+    loglikelihood_away = st.poisson(theta_away).logpmf(goals_away)
+
+    loglikelihood = np.sum(loglikelihood_home + loglikelihood_away)
+    return loglikelihood
+
+def compute_probabilities(eta, theta, n_teams, dataf):
+    eta_logprob = compute_hyper_prior_probabilities(eta)
+    theta_logprob = compute_prior_probabilities(eta, theta, n_teams)
+    loglikelihood = compute_likelihood(theta, n_teams, dataf)
+    logprob = eta_logprob + theta_logprob + loglikelihood
+    return logprob
+
+def metropolis_hastings(n_samples, n_teams, sigma, dataf, thinning, burn_in, sample_burn_in=False):
+
+    starting_point = 0.1
+    eta_current = np.full(4, starting_point)
+    theta_current = enforce_corner_constraint(np.full(1+n_teams*2, starting_point), n_teams)
+    samples = []
+    rejection = []
+    t = 0
+    
+    if sample_burn_in:
+        n_samples = n_samples+(burn_in/thinning)
+
+    while n_samples > len(samples):
+
+        eta_proposal = propose_samples(eta_current, sigma)
+        theta_proposal = enforce_corner_constraint(propose_samples(theta_current, sigma), n_teams)
+
+        current_logprob = compute_probabilities(eta_current, theta_current, n_teams, dataf)
+        proposal_logprob = compute_probabilities(eta_proposal, theta_proposal, n_teams, dataf)
+        acceptance_logprob = proposal_logprob - current_logprob
+
+        u = np.random.uniform()
+        if np.log(u) < acceptance_logprob:
+            eta_current = eta_proposal.copy()
+            theta_current = theta_proposal.copy()
+            rejection.append(0)
+        else:
+            rejection.append(1)
+
+        if t % thinning == 0:
+            if sample_burn_in:
+                samples.append(theta_current.copy())     
+            elif t > burn_in:
+                samples.append(theta_current.copy())     
+
+        t += 1   
+        print(f'\r{len(samples)} / {n_samples} samples', end='')
+
+    return np.array(samples), np.array(rejection)
+
+
+dataf = pd.read_csv('premier_league_2013_2014.dat', sep=',', header=None)
+dataf.columns = ['goals_home', 'goals_away', 'home_team', 'away_team']
+
+
+n_samples = 5000
+n_teams = 20
+sigmas = [0.005, 0.05, 0.5]
+thinning = [1, 5, 20, 50]
+burn_in = 5000
+home_batches = []
+rejection_batches = []
+
+for i in range(len(sigmas)):
+    for j in range(len(thinning)):
+
+        print(f'\nRunning sigma={sigmas[i]} and thinning={thinning[j]}')
+        samples, rejection = metropolis_hastings(n_samples, n_teams, sigmas[i], dataf, thinning[j], burn_in, sample_burn_in=True)
+        homes = samples[:,-1]
+        home_batches.append(homes)
+        rejection_batches.append(rejection)
+
+
+plot_its = burn_in + n_samples
+t = 0
+for i in range(len(sigmas)):
+    for j in range(len(thinning)):
+
+        rejection = rejection_batches[t]
+        rejection = rejection[burn_in:]
+        print(f'Rejection rate: sigma={sigmas[i]}, thinning={thinning[j]}:', np.round(np.mean(rejection), 4))
+
+        home = home_batches[t]
+        plot_samples = plot_its//thinning[j]
+        its = np.array(np.linspace(0,plot_its,plot_samples))
+        n_homes = home.shape[0]
+
+        fig = plt.figure()
+        ax = plt.axes()
+        ax.plot(its, home[:plot_samples], '-')
+        # ax.plot(np.array(np.linspace(0,n_homes*thinning[j],n_homes)), home, '-')
+        ax.axvline(x=burn_in, color='red', linestyle='--', label='Burn-in')
+        ax.set_xlabel('Iteration')
+        ax.set_ylabel('$home$')
+        ax.grid(True, alpha=0.25)
+        fig.tight_layout()
+        plt.show()
+
+        t += 1
+
+
+samples, _ = metropolis_hastings(n_samples, n_teams, sigmas[1], dataf, thinning[1], burn_in, sample_burn_in=False)
+homes = samples[:,-1]
+proposal_x = np.linspace(np.min(homes), np.max(homes), 1000)
+proposal_y = st.norm(np.mean(homes), sigmas[1]).pdf(proposal_x)
+
+fig = plt.figure()
+plt.hist(homes, bins=50, density=True, label='Posterior distribution')
+plt.plot(proposal_x, proposal_y, color='red', label='Proposal distribution')
+plt.xlabel('$home$')
+plt.ylabel('PDF')
+plt.grid(True, alpha=0.25)
+plt.legend()
+fig.tight_layout()
+plt.show()
+
+
+expected_attack = np.mean(samples[:,:n_teams], 0)
+expected_defense = np.mean(samples[:,n_teams:-1], 0)
+
+fig = plt.figure()
+ax = plt.axes()
+ax.plot(expected_defense, expected_attack, 'o')
+for i in range(expected_defense.shape[0]):
+    ax.text(expected_defense[i], expected_attack[i], str(i))
+ax.set_xlabel(r'$E_{p(\theta,\eta\mid y)}[def_i]$')
+ax.set_ylabel(r'$E_{p(\theta,\eta\mid y)}[att_i]$')
+ax.grid(True, alpha=0.25)
+fig.tight_layout()
+plt.show()
+\end{lstlisting}
 
 
 \begin{lstlisting}[language=Python, caption={The implemented methods for optimizing QWOP in Python for Q4.}, label={lst:Q4}]
-def crossover(individual1, individual2):
-    n_genes = len(individual1)
-    crossover_point = np.random.randint(1, n_genes)
-    new_individuals = np.zeros((2, n_genes))
-
-    for j in range(n_genes):
-        if j < crossover_point:
-            new_individuals[0, j] = individual1[j]
-            new_individuals[1, j] = individual2[j]
-        else:
-            new_individuals[0, j] = individual2[j]
-            new_individuals[1, j] = individual1[j]
-
-    return new_individuals
-
-
 def tournament_select(fitness_list, tournament_probability, tournament_size):
     most_fit = 0
     fitness_index = 0
@@ -478,7 +646,23 @@ def tournament_select(fitness_list, tournament_probability, tournament_size):
                 selected_individual_index = int(tour_fitness_and_individual[most_fit, individual_index])
                 return selected_individual_index
 
-                
+
+def crossover(individual1, individual2):
+    n_genes = len(individual1)
+    crossover_point = np.random.randint(1, n_genes)
+    new_individuals = np.zeros((2, n_genes))
+
+    for j in range(n_genes):
+        if j < crossover_point:
+            new_individuals[0, j] = individual1[j]
+            new_individuals[1, j] = individual2[j]
+        else:
+            new_individuals[0, j] = individual2[j]
+            new_individuals[1, j] = individual1[j]
+
+    return new_individuals
+
+    
 def decode_chromosome(chromosome, number_of_variables, maximum_variable_value):
     x = np.zeros(number_of_variables)
     n_genes = len(chromosome)
@@ -574,8 +758,6 @@ def run_function_optimization(population_size, number_of_genes, number_of_variab
 
         population = temporary_population
         print('generation:', generation, 'maximum_fitness:', maximum_fitness_best, end='\r')
-        np.save('best_plan.npy', np.array(best_variable_values_best))
-        np.save('generation.npy', np.array(generation))
 
     return maximum_fitness_best, best_variable_values_best
 

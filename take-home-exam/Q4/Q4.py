@@ -340,8 +340,6 @@ def run_function_optimization(population_size, number_of_genes, number_of_variab
 
         population = temporary_population
         print('generation:', generation, 'maximum_fitness:', maximum_fitness_best, end='\r')
-        np.save('best_plan.npy', np.array(best_variable_values_best))
-        np.save('generation.npy', np.array(generation))
 
     return maximum_fitness_best, best_variable_values_best
 
